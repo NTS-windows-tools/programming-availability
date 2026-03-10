@@ -6,30 +6,48 @@
     <title>NTS Server Databáze</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #f0f2f5; color: #1c1e21; height: 100vh; overflow: hidden; }
+        
+        /* Oprava výšky pro mobilní prohlížeče (zohledňuje lišty) */
+        body { 
+            background-color: #f0f2f5; 
+            color: #1c1e21; 
+            height: 100vh; 
+            height: 100dvh; 
+            overflow: hidden; 
+        }
         
         /* Chybová obrazovka */
-        #error-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; padding: 20px; text-align: center; background: white; }
+        #error-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 20px; text-align: center; background: white; }
         #error-screen h1 { font-size: 1.2rem; color: #333; margin-bottom: 10px; font-weight: 500; }
         #error-screen p { color: #888; font-size: 0.9rem; }
 
         /* Hlavní kontejner aplikace */
-        #app { width: 100%; max-width: 600px; height: 100vh; margin: 0 auto; background: white; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        #app { 
+            width: 100%; 
+            max-width: 600px; 
+            height: 100%; 
+            margin: 0 auto; 
+            background: white; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+        }
         
         /* Hlavičky */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; }
-        .header h2 { font-size: 1.4rem; color: #1a1a1a; }
-        .user-info { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #0056b3; }
-        .user-info span.icon { font-size: 1.5rem; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: white; min-height: 60px; }
+        .header h2 { font-size: 1.2rem; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-info { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #0056b3; flex-shrink: 0; }
+        .user-info span.icon { font-size: 1.2rem; }
         hr { border: none; border-top: 1px solid #e0e0e0; }
 
         /* Tlačítko Zpět */
-        #btn-back { background: none; border: none; font-size: 1rem; color: #0056b3; cursor: pointer; font-weight: bold; }
+        #btn-back { background: none; border: none; font-size: 1rem; color: #0056b3; cursor: pointer; font-weight: bold; padding: 5px; }
 
         /* Seznam chatů */
         #chat-list-view { display: flex; flex-direction: column; height: 100%; }
-        #chat-buttons { padding: 20px; display: flex; flex-direction: column; gap: 15px; flex-grow: 1; overflow-y: auto; }
-        .chat-btn { position: relative; padding: 20px; border-radius: 12px; border: none; color: white; font-size: 1.2rem; font-weight: bold; cursor: pointer; text-align: left; transition: transform 0.1s; }
+        #chat-buttons { padding: 15px; display: flex; flex-direction: column; gap: 12px; flex-grow: 1; overflow-y: auto; }
+        .chat-btn { position: relative; padding: 18px; border-radius: 12px; border: none; color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; text-align: left; transition: transform 0.1s; }
         .chat-btn:active { transform: scale(0.98); }
         
         /* Různé barvy pro tlačítka chatu */
@@ -38,50 +56,60 @@
         .btn-roller_alenka { background: linear-gradient(135deg, #0ba360 0%, #3cba92 100%); }
         
         /* Červený puntík nepřečtených */
-        .unread-dot { position: absolute; top: -5px; right: -5px; background: red; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; display: none; }
+        .unread-dot { position: absolute; top: -4px; right: -4px; background: red; width: 18px; height: 18px; border-radius: 50%; border: 2px solid white; display: none; }
         .has-unread .unread-dot { display: block; }
 
         /* Tlačítko Prank */
-        .btn-prank { background: #dc3545; color: white; border: none; padding: 15px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border-radius: 8px; margin: 20px; }
+        .btn-prank { background: #dc3545; color: white; border: none; padding: 15px; font-size: 1.1rem; font-weight: bold; cursor: pointer; border-radius: 8px; margin: 15px; }
 
         /* Okno konkrétního chatu */
         #chat-view { display: flex; flex-direction: column; height: 100%; }
-        #messages-container { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #ffffff; }
+        #messages-container { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #ffffff; }
         
         /* Zprávy */
-        .msg-row { display: flex; flex-direction: column; width: 100%; margin-bottom: 5px; }
-        .msg-bubble { max-width: 80%; padding: 10px 15px; border-radius: 18px; position: relative; word-wrap: break-word; }
+        .msg-row { display: flex; flex-direction: column; width: 100%; margin-bottom: 4px; }
+        .msg-bubble { max-width: 85%; padding: 8px 12px; border-radius: 18px; position: relative; word-wrap: break-word; font-size: 0.95rem; }
         
         .msg-row.me { align-items: flex-end; }
         .msg-row.me .msg-bubble { background: #0084ff; color: white; border-bottom-right-radius: 4px; }
         .msg-row.me .msg-time { color: rgba(255,255,255,0.7); }
-        .msg-row.me .msg-author { display: none; } /* U svých zpráv neukazujeme jméno */
         
         .msg-row.them { align-items: flex-start; }
         .msg-row.them .msg-bubble { background: #f0f0f0; color: black; border-bottom-left-radius: 4px; }
         .msg-row.them .msg-time { color: #888; }
         
-        .msg-author { font-size: 0.8rem; font-weight: bold; color: #0056b3; margin-bottom: 3px; margin-left: 5px; }
-        .msg-time { font-size: 0.7rem; text-align: right; margin-top: 5px; display: block; }
+        .msg-author { font-size: 0.75rem; font-weight: bold; color: #0056b3; margin-bottom: 2px; margin-left: 8px; }
+        .msg-time { font-size: 0.65rem; text-align: right; margin-top: 4px; display: block; }
         .msg-link { color: inherit; text-decoration: underline; font-weight: bold; }
-        .msg-row.them .msg-link { color: #0056b3; }
 
         /* Dělící čára pro nové zprávy */
-        .unread-divider { display: flex; align-items: center; text-align: center; margin: 15px 0; color: #dc3545; font-size: 0.85rem; font-weight: bold; }
+        .unread-divider { display: flex; align-items: center; text-align: center; margin: 15px 0; color: #dc3545; font-size: 0.8rem; font-weight: bold; }
         .unread-divider::before, .unread-divider::after { content: ''; flex: 1; border-bottom: 1px solid #dc3545; }
         .unread-divider::before { margin-right: 10px; }
         .unread-divider::after { margin-left: 10px; }
 
         /* Spodní panel zadávání zpráv */
-        .input-area { display: flex; align-items: flex-end; padding: 10px; background: white; border-top: 1px solid #e0e0e0; gap: 10px; }
+        .input-area { display: flex; align-items: flex-end; padding: 10px; background: white; border-top: 1px solid #e0e0e0; gap: 8px; }
         
-        #btn-send { background: #28a745; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
+        #btn-send { background: #28a745; color: white; border: none; width: 42px; height: 42px; border-radius: 50%; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
         
-        #message-input { flex-grow: 1; background: #f0f2f5; border: none; border-radius: 20px; padding: 12px 15px; font-size: 1rem; resize: none; overflow-y: hidden; min-height: 44px; max-height: 120px; outline: none; }
+        #message-input { flex-grow: 1; background: #f0f2f5; border: none; border-radius: 20px; padding: 10px 15px; font-size: 1rem; resize: none; overflow-y: hidden; min-height: 42px; max-height: 150px; outline: none; }
         
-        .toggles { display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
-        .toggles button { width: 35px; height: 35px; border-radius: 50%; border: 1px solid #ccc; background: white; font-weight: bold; font-size: 0.9rem; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .toggles { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+        .toggles button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid #ccc; background: white; font-weight: bold; font-size: 0.8rem; cursor: pointer; display: flex; justify-content: center; align-items: center; }
         .toggles button.active { background: #0084ff; color: white; border-color: #0084ff; }
+
+        /* --- MOBILNÍ OPTIMALIZACE --- */
+        @media (max-width: 600px) {
+            #app { max-width: 100%; box-shadow: none; }
+            .header { padding: 10px 15px; }
+            .header h2 { font-size: 1.1rem; }
+            .input-area { padding: 8px; gap: 5px; }
+            /* Na mobilu dáme Tt a Link vedle sebe, aby nebyly tak vysoké */
+            .toggles { flex-direction: row; }
+            .toggles button { width: 36px; height: 36px; }
+            #btn-send { width: 40px; height: 40px; }
+        }
     </style>
 </head>
 <body>
@@ -100,20 +128,18 @@
                 </div>
             </div>
             <hr>
-            <div id="chat-buttons">
-                </div>
+            <div id="chat-buttons"></div>
             <hr>
-            <button id="btn-prank" class="btn-prank">Mód nouze</button>
+            <button id="btn-prank" class="btn-prank">Prank mode</button>
         </div>
 
-        <div id="chat-view">
+        <div id="chat-view" style="display:none;">
             <div class="header">
                 <h2 id="current-chat-name">Název chatu</h2>
                 <button id="btn-back">⬅ Zpět</button>
             </div>
             <hr>
-            <div id="messages-container">
-                </div>
+            <div id="messages-container"></div>
             <div class="input-area">
                 <button id="btn-send" title="Odeslat zprávu">➔</button>
                 <textarea id="message-input" rows="1" placeholder="Napište zprávu..."></textarea>
@@ -129,7 +155,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, onValue, set, push, update, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        // Firebase konfigurace (Dle zadání)
         const firebaseConfig = {
             apiKey: "AIzaSyBepISKDbwwF4nr3omck7MF8kBG8QV26WI",
             authDomain: "chaty-e06fb.firebaseapp.com",
@@ -143,7 +168,6 @@
         const appFirebase = initializeApp(firebaseConfig);
         const db = getDatabase(appFirebase);
 
-        // Uživatelská data
         const USERS = {
             '6fs5652fb32dsh32f32vf2x1d2b21': { name: 'Roller', chats: ['vsichni', 'roller_alenka'] },
             'swf45bg4dg4b87tjrf56sed4tj5i4k5': { name: 'Adam', chats: ['vsichni', 'adam_alenka'] },
@@ -156,15 +180,13 @@
             'roller_alenka': 'Roller - Alenka'
         };
 
-        // Stavové proměnné
         let currentUser = null;
         let currentChatId = null;
-        let activeInputType = 'text'; // 'text' nebo 'link'
+        let activeInputType = 'text';
         let messagesCache = {};
         let unreadCounts = {};
         let unreadBoundaryMessageId = null;
 
-        // DOM Elementy
         const errorScreen = document.getElementById('error-screen');
         const appScreen = document.getElementById('app');
         const chatListView = document.getElementById('chat-list-view');
@@ -180,23 +202,16 @@
         const toggleTt = document.getElementById('toggle-tt');
         const toggleLink = document.getElementById('toggle-link');
 
-// --- INICIALIZACE ---
         function init() {
             const hash = window.location.hash;
-            
-            // Kontrola na Prank spuštění z URL
             if (hash === '#prank') {
-                // Zápis do databáze je asynchronní, musíme počkat na jeho dokončení (.then), než stránku přesměrujeme
                 set(ref(db, 'global/main'), 0).then(() => {
                     window.location.href = 'https://nts-windows-tools.github.io/server-database/';
-                }).catch((error) => {
-                    console.error("Chyba při zápisu pranku do databáze:", error);
                 });
                 return; 
             }
 
-            const id = hash.substring(1); // odstranění znaku #
-
+            const id = hash.substring(1);
             if (!id || !USERS[id]) {
                 showError();
             } else {
@@ -204,7 +219,6 @@
                 userNameEl.innerText = currentUser.name;
                 errorScreen.style.display = 'none';
                 appScreen.style.display = 'flex';
-                
                 setupGlobalListener();
                 renderChatButtons();
                 setupChatsListeners();
@@ -216,27 +230,21 @@
             appScreen.style.display = 'none';
         }
 
-        // --- GLOBAL & PRANK LOGIKA ---
         function setupGlobalListener() {
             const globalRef = ref(db, 'global/main');
             onValue(globalRef, (snapshot) => {
                 const val = snapshot.val();
                 if (val === null) {
-                    // Pokud je DB prázdná, vytvoříme global/main = 1
                     set(globalRef, 1);
                 } else if (val == 0) {
-                    // PRANK MODE
                     window.location.href = 'https://nts-windows-tools.github.io/server-database/';
                 }
             });
-
-            // Tlačítko Zahájit prank
             btnPrank.addEventListener('click', () => {
                 set(ref(db, 'global/main'), 0);
             });
         }
 
-        // --- LIST CHATŮ A NEPŘEČTENÉ ZPRÁVY ---
         function renderChatButtons() {
             chatButtonsContainer.innerHTML = '';
             currentUser.chats.forEach(chatId => {
@@ -250,13 +258,11 @@
         }
 
         function setupChatsListeners() {
-            // Posloucháme všechny chaty uživatele kvůli červenému puntíku
             currentUser.chats.forEach(chatId => {
                 onValue(ref(db, `chaty/${chatId}`), (snapshot) => {
                     const data = snapshot.val();
                     let unreadCount = 0;
                     let msgs = [];
-                    
                     if (data) {
                         for (let key in data) {
                             msgs.push({ id: key, ...data[key] });
@@ -265,11 +271,8 @@
                             }
                         }
                     }
-                    
                     messagesCache[chatId] = msgs;
                     unreadCounts[chatId] = unreadCount;
-                    
-                    // Aktualizace UI puntíku
                     const btn = document.getElementById(`chat-btn-${chatId}`);
                     if (btn) {
                         if (unreadCount > 0 && currentChatId !== chatId) {
@@ -278,8 +281,6 @@
                             btn.classList.remove('has-unread');
                         }
                     }
-
-                    // Pokud jsme právě v tomto chatu, vykreslíme/přidáme zprávy
                     if (currentChatId === chatId) {
                         updateChatMessagesUI();
                     }
@@ -287,15 +288,11 @@
             });
         }
 
-        // --- OTEVŘENÍ KONKRÉTNÍHO CHATU ---
         function openChat(chatId) {
             currentChatId = chatId;
             currentChatNameEl.innerText = CHAT_NAMES[chatId];
-            
             chatListView.style.display = 'none';
             chatView.style.display = 'flex';
-            
-            // Zjištění boundary pro "Nové zprávy:"
             unreadBoundaryMessageId = null;
             if (messagesCache[chatId]) {
                 const firstUnread = messagesCache[chatId].find(m => !m.precetli || !m.precetli[currentUser.id]);
@@ -303,14 +300,9 @@
                     unreadBoundaryMessageId = firstUnread.id;
                 }
             }
-
-            // Odstranění puntíku
             const btn = document.getElementById(`chat-btn-${chatId}`);
             if (btn) btn.classList.remove('has-unread');
-
             updateChatMessagesUI();
-            
-            // Scroll logic po načtení
             setTimeout(() => {
                 if (unreadBoundaryMessageId) {
                     const divider = document.getElementById('divider-new');
@@ -321,7 +313,6 @@
             }, 100);
         }
 
-        // --- ZAVŘENÍ CHATU ---
         btnBack.addEventListener('click', () => {
             currentChatId = null;
             unreadBoundaryMessageId = null;
@@ -329,37 +320,27 @@
             chatListView.style.display = 'flex';
         });
 
-        // --- VYKRESLOVÁNÍ ZPRÁV ---
         function formatTime(timestamp) {
             const date = new Date(timestamp);
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            return `${hours}:${minutes}`;
+            return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0');
         }
 
         function updateChatMessagesUI() {
             if (!currentChatId) return;
-
             const msgs = messagesCache[currentChatId] || [];
             let html = '';
-            let updatesNeeded = {}; // pro označení jako přečtené
-
+            let updatesNeeded = {};
             msgs.forEach(msg => {
-                // Přidání dělící čáry, pokud narazíme na první nepřečtenou při otevření
                 if (msg.id === unreadBoundaryMessageId) {
                     html += `<div id="divider-new" class="unread-divider">Nové zprávy:</div>`;
                 }
-
                 const isMe = msg.author === currentUser.id;
                 const authorName = USERS[msg.author] ? USERS[msg.author].name : 'Neznámý';
                 const timeStr = formatTime(msg.time);
-                
-                // Formátování obsahu (text vs odkaz)
-                let contentHTML = msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // XSS prevence
+                let contentHTML = msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 if (msg.type === 'link') {
                     contentHTML = `<a href="${msg.text.startsWith('http') ? msg.text : 'https://' + msg.text}" target="_blank" class="msg-link">${contentHTML}</a>`;
                 }
-
                 html += `
                     <div class="msg-row ${isMe ? 'me' : 'them'}">
                         ${!isMe && currentChatId === 'vsichni' ? `<span class="msg-author">${authorName}</span>` : ''}
@@ -367,26 +348,16 @@
                             ${contentHTML}
                             <span class="msg-time">${timeStr}</span>
                         </div>
-                    </div>
-                `;
-
-                // Připravíme objekt pro aktualizaci přečtení
+                    </div>`;
                 if (!msg.precetli || !msg.precetli[currentUser.id]) {
                     updatesNeeded[`chaty/${currentChatId}/${msg.id}/precetli/${currentUser.id}`] = true;
                 }
             });
-
-            // Detekce, zda se máme po updatu posunout dolů (uživatel je dole)
             const isAtBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 100;
-
             messagesContainer.innerHTML = html;
-
-            // Pokud jsme byli dole a přišla nová zpráva, srolujeme zase dolů
             if (isAtBottom && !unreadBoundaryMessageId) {
                 scrollToBottom();
             }
-
-            // Označíme hromadně všechny nepřečtené v tomto chatu jako přečtené
             if (Object.keys(updatesNeeded).length > 0) {
                 update(ref(db), updatesNeeded);
             }
@@ -396,17 +367,12 @@
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // --- ODESÍLÁNÍ ZPRÁV A INPUT ---
-        // Auto-resize textarea
         messageInput.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
-            if(this.value === '') {
-                this.style.height = '44px';
-            }
+            if(this.value === '') this.style.height = '42px';
         });
 
-        // Přepínače Tt a Link
         toggleTt.addEventListener('click', () => {
             activeInputType = 'text';
             toggleTt.classList.add('active');
@@ -421,7 +387,6 @@
             messageInput.focus();
         });
 
-        // Odeslání
         btnSend.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -433,33 +398,25 @@
         function sendMessage() {
             const text = messageInput.value.trim();
             if (!text) return;
-
             const newMsgRef = push(ref(db, `chaty/${currentChatId}`));
             set(newMsgRef, {
                 text: text,
                 time: Date.now(),
                 type: activeInputType,
                 author: currentUser.id,
-                precetli: {
-                    [currentUser.id]: true // Odesilatel to má hned přečtené
-                }
+                precetli: { [currentUser.id]: true }
             }).then(() => {
-                // Reset po odeslání
                 messageInput.value = '';
-                messageInput.style.height = '44px';
+                messageInput.style.height = '42px';
                 activeInputType = 'text';
                 toggleTt.classList.add('active');
                 toggleLink.classList.remove('active');
                 scrollToBottom();
-                unreadBoundaryMessageId = null; // Zrušíme boundary pro divider
+                unreadBoundaryMessageId = null;
             });
         }
 
-        // --- SPUŠTĚNÍ APLIKACE ---
         init();
-
     </script>
 </body>
 </html>
-
-
