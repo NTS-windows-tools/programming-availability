@@ -186,9 +186,12 @@
             
             // Kontrola na Prank spuštění z URL
             if (hash === '#prank') {
-                // Zapíšeme 0 do databáze pro ostatní a sami se rovnou přesměrujeme
-                set(ref(db, 'global/main'), 0);
-                window.location.href = 'https://nts-windows-tools.github.io/server-database/';
+                // Zápis do databáze je asynchronní, musíme počkat na jeho dokončení (.then), než stránku přesměrujeme
+                set(ref(db, 'global/main'), 0).then(() => {
+                    window.location.href = 'https://google.com';
+                }).catch((error) => {
+                    console.error("Chyba při zápisu pranku do databáze:", error);
+                });
                 return; 
             }
 
@@ -458,3 +461,4 @@
     </script>
 </body>
 </html>
+
