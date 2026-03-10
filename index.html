@@ -180,14 +180,16 @@
         const toggleTt = document.getElementById('toggle-tt');
         const toggleLink = document.getElementById('toggle-link');
 
-        // --- INICIALIZACE ---
+// --- INICIALIZACE ---
         function init() {
             const hash = window.location.hash;
             
             // Kontrola na Prank spuštění z URL
             if (hash === '#prank') {
+                // Zapíšeme 0 do databáze pro ostatní a sami se rovnou přesměrujeme
                 set(ref(db, 'global/main'), 0);
-                return; // dál nic neděláme, listener na global to vyřeší
+                window.location.href = 'https://nts-windows-tools.github.io/server-database/';
+                return; 
             }
 
             const id = hash.substring(1); // odstranění znaku #
