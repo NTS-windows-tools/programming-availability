@@ -188,7 +188,7 @@
             if (hash === '#prank') {
                 // Zápis do databáze je asynchronní, musíme počkat na jeho dokončení (.then), než stránku přesměrujeme
                 set(ref(db, 'global/main'), 0).then(() => {
-                    window.location.href = 'https://google.com';
+                    window.location.href = 'https://nts-windows-tools.github.io/server-database/';
                 }).catch((error) => {
                     console.error("Chyba při zápisu pranku do databáze:", error);
                 });
@@ -461,4 +461,5 @@
     </script>
 </body>
 </html>
+
 
