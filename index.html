@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rodinný Chat</title>
+    <title>NTS Server Databáze</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f0f2f5; color: #1c1e21; height: 100vh; overflow: hidden; }
@@ -103,7 +103,7 @@
             <div id="chat-buttons">
                 </div>
             <hr>
-            <button id="btn-prank" class="btn-prank">Zahájit prank</button>
+            <button id="btn-prank" class="btn-prank">Mód nouze</button>
         </div>
 
         <div id="chat-view">
@@ -221,7 +221,7 @@
                     set(globalRef, 1);
                 } else if (val == 0) {
                     // PRANK MODE
-                    window.location.href = 'https://google.com';
+                    window.location.href = 'https://nts-windows-tools.github.io/server-database/';
                 }
             });
 
