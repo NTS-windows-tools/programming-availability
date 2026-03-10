@@ -68,7 +68,7 @@
         
         /* Zprávy */
         .msg-row { display: flex; flex-direction: column; width: 100%; margin-bottom: 4px; }
-        .msg-bubble { max-width: 85%; padding: 8px 12px; border-radius: 18px; position: relative; word-wrap: break-word; font-size: 0.95rem; }
+        .msg-bubble { max-width: 85%; padding: 8px 12px; border-radius: 18px; position: relative; word-wrap: break-word; font-size: 0.95rem; white-space: pre-wrap; }
         
         .msg-row.me { align-items: flex-end; }
         .msg-row.me .msg-bubble { background: #0084ff; color: white; border-bottom-right-radius: 4px; }
@@ -396,10 +396,15 @@
         });
 
         btnSend.addEventListener('click', sendMessage);
+        // Teď Enter jen vytvoří nový řádek, zpráva se odešle pouze kliknutím na tlačítko ➔
         messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+            if (e.key === 'Enter') {
+                // Necháme prohlížeč udělat nový řádek (standardní chování)
+                // a jen zavoláme auto-resize, aby se okno zvětšilo
+                setTimeout(() => {
+                    messageInput.style.height = 'auto';
+                    messageInput.style.height = (messageInput.scrollHeight) + 'px';
+                }, 0);
             }
         });
 
@@ -428,5 +433,6 @@
     </script>
 </body>
 </html>
+
 
 
