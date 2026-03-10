@@ -337,7 +337,15 @@
                 const isMe = msg.author === currentUser.id;
                 const authorName = USERS[msg.author] ? USERS[msg.author].name : 'Neznámý';
                 const timeStr = formatTime(msg.time);
-                let contentHTML = msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                // Formátování obsahu
+                let contentHTML = msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;"); // Nejdříve vše "zneškodníme"
+
+                // Podpora pro tučný text pomocí **tučný text**
+                contentHTML = contentHTML.replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+
+                // Podpora pro HTML tag <b>, pokud ho přesto chceš psát ručně
+                contentHTML = contentHTML.replace(/&lt;b&gt;(.*?)&lt;\/b&gt;/g, "<b>$1</b>");
+
                 if (msg.type === 'link') {
                     contentHTML = `<a href="${msg.text.startsWith('http') ? msg.text : 'https://' + msg.text}" target="_blank" class="msg-link">${contentHTML}</a>`;
                 }
@@ -420,4 +428,5 @@
     </script>
 </body>
 </html>
+
 
